@@ -1,155 +1,148 @@
-'use client';
+from fastapi import APIRouter, HTTPException
+from fastapi import UploadFile, File
+from pydantic import BaseModel
+from openai import AsyncOpenAI
+from dotenv import load_dotenv
+import os
 
-import { useState } from 'react';
-import axios from 'axios';
+load_dotenv()
+client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
-export default function AiDashboard() {
-  const [mode, setMode] = useState<'generate' | 'improve' | 'analyze' | 'summarize'>('generate');
-  const [task, setTask] = useState('');
-  const [context, setContext] = useState('');
-  const [filename, setFilename] = useState('App/generated/ai_code.py');
-  const [existingCode, setExistingCode] = useState('');
-  const [goal, setGoal] = useState('');
-  const [result, setResult] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState('');
+router = APIRouter(prefix="/ai", tags=["AI"])
 
-  const apiMap = {
-    generate: 'generate-code',
-    improve: 'improve-code',
-    analyze: 'analyze-code',
-    summarize: 'summarize'
-  };
+class SummaryRequest(BaseModel):
+    notes: str
 
-  const runAction = async () => {
-    setLoading(true);
-    setResult('');
-    setError('');
-    try {
-      const payload: any = {};
-      if (mode === 'generate') {
-        payload.task = task;
-        payload.context = context;
-        payload.filename = filename;
-      } else if (mode === 'improve') {
-        payload.existing_code = existingCode;
-        payload.goal = goal;
-        payload.filename = filename;
-      } else if (mode === 'analyze') {
-        payload.code = existingCode;
-      } else if (mode === 'summarize') {
-        payload.notes = context;
-      }
+class CodeRequest(BaseModel):
+    task: str
+    context: str
 
-      const response = await axios.post(`http://localhost:8000/ai/${apiMap[mode]}`, payload);
-      const key = mode === 'generate' ? 'code' : mode === 'improve' ? 'improved_code' : mode === 'analyze' ? 'analysis' : 'summary';
-      setResult(response.data[key]);
-    } catch (err: any) {
-      console.error(err);
-      setError(err.response?.data?.detail || 'Unexpected error');
-    } finally {
-      setLoading(false);
-    }
-  };
+class ImproveCodeRequest(BaseModel):
+    existing_code: str
+    goal: str
 
-  return (
-    <main className="min-h-screen p-6 bg-gray-100">
-      <h1 className="text-3xl font-bold mb-4">AI Assistant</h1>
+class AnalyzeCodeRequest(BaseModel):
+    code: str
 
-      <div className="mb-4 space-x-2">
-        {(['generate', 'improve', 'analyze', 'summarize'] as const).map((m) => (
-          <button
-            key={m}
-            onClick={() => setMode(m)}
-            className={`px-4 py-2 rounded ${mode === m ? 'bg-blue-700 text-white' : 'bg-gray-300'}`}
-          >
-            {m.charAt(0).toUpperCase() + m.slice(1)}
-          </button>
-        ))}
-      </div>
+@router.post("/summarize")
+async def summarize_notes(req: SummaryRequest):
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "Summarize the following maintenance notes in a concise and technical tone."},
+                {"role": "user", "content": req.notes}
+            ],
+            temperature=0.3
+        )
+        return {"summary": response.choices[0].message.content.strip()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-      {mode === 'generate' && (
-        <>
-          <input
-            className="block w-full max-w-xl p-2 mb-2 border rounded"
-            placeholder="Describe the task..."
-            value={task}
-            onChange={(e) => setTask(e.target.value)}
-          />
-          <textarea
-            className="block w-full max-w-xl p-2 mb-2 border rounded"
-            placeholder="Context or examples..."
-            value={context}
-            onChange={(e) => setContext(e.target.value)}
-            rows={4}
-          />
-          <input
-            className="block w-full max-w-xl p-2 mb-4 border rounded"
-            placeholder="Save to file (e.g. App/generated/code.py)"
-            value={filename}
-            onChange={(e) => setFilename(e.target.value)}
-          />
-        </>
-      )}
 
-      {mode === 'improve' && (
-        <>
-          <textarea
-            className="block w-full max-w-xl p-2 mb-2 border rounded"
-            placeholder="Paste existing code here..."
-            value={existingCode}
-            onChange={(e) => setExistingCode(e.target.value)}
-            rows={6}
-          />
-          <input
-            className="block w-full max-w-xl p-2 mb-2 border rounded"
-            placeholder="What should be improved?"
-            value={goal}
-            onChange={(e) => setGoal(e.target.value)}
-          />
-          <input
-            className="block w-full max-w-xl p-2 mb-4 border rounded"
-            placeholder="Save to file (e.g. App/generated/improved_code.py)"
-            value={filename}
-            onChange={(e) => setFilename(e.target.value)}
-          />
-        </>
-      )}
+# AI GENERATED CODE
+@router.post("/review-file")
+async def review_file(file: UploadFile = File(...)):
+    try:
+        contents = await file.read()
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "Review the uploaded code for clarity, bugs, and refactor opportunities."},
+                {"role": "user", "content": contents.decode("utf-8")}
+            ]
+        )
+        return {"review": response.choices[0].message.content.strip()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-      {mode === 'analyze' && (
-        <textarea
-          className="block w-full max-w-xl p-2 mb-4 border rounded"
-          placeholder="Paste code for analysis..."
-          value={existingCode}
-          onChange={(e) => setExistingCode(e.target.value)}
-          rows={6}
-        />
-      )}
 
-      {mode === 'summarize' && (
-        <textarea
-          className="block w-full max-w-xl p-2 mb-4 border rounded"
-          placeholder="Paste technician notes here..."
-          value={context}
-          onChange={(e) => setContext(e.target.value)}
-          rows={6}
-        />
-      )}
+# AI GENERATED CODE
+class TestGenRequest(BaseModel):
+    function_code: str
 
-      <button
-        onClick={runAction}
-        disabled={loading}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 disabled:opacity-50"
-      >
-        {loading ? 'Working...' : `Run ${mode}`}
-      </button>
+@router.post("/test-generator")
+async def generate_tests(req: TestGenRequest):
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "Write Pytest-based unit tests for the given function."},
+                {"role": "user", "content": req.function_code}
+            ]
+        )
+        return {
+            "unit_tests": f"# AI GENERATED CODE\n{response.choices[0].message.content.strip()}"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
 
-      {error && <div className="text-red-600 mt-4">{error}</div>}
-      {result && (
-        <pre className="bg-white border mt-4 p-4 rounded shadow w-full max-w-xl overflow-auto">
-          {result}
-        </pre>
-      )}
-    </main>
-  );
-}
+
+# AI GENERATED CODE
+class DocRequest(BaseModel):
+    code: str
+
+@router.post("/docstring")
+async def add_docstring(req: DocRequest):
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "Add proper Python docstrings to the following code."},
+                {"role": "user", "content": req.code}
+            ]
+        )
+        return {
+            "docstringed_code": f"# AI GENERATED CODE\n{response.choices[0].message.content.strip()}"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/generate-code")
+async def generate_code_endpoint(req: CodeRequest):
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "You are an expert developer. Generate high-quality, production-ready code based on the task and context."},
+                {"role": "user", "content": f"Task: {req.task}\n\nContext:\n{req.context}"}
+            ],
+            temperature=0.2
+        )
+        return {
+            "code": f"# AI GENERATED CODE\n{response.choices[0].message.content.strip()}"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/improve-code")
+async def improve_code(req: ImproveCodeRequest):
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "Improve the following code to meet the described goal. Optimize for clarity, maintainability, and performance."},
+                {"role": "user", "content": f"Code:\n{req.existing_code}\n\nGoal:\n{req.goal}"}
+            ],
+            temperature=0.2
+        )
+        return {
+            "improved_code": f"# AI GENERATED CODE\n{response.choices[0].message.content.strip()}"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+@router.post("/analyze-code")
+async def analyze_code(req: AnalyzeCodeRequest):
+    try:
+        response = await client.chat.completions.create(
+            model="gpt-4o",
+            messages=[
+                {"role": "system", "content": "Analyze the following code for bugs, inefficiencies, and opportunities to refactor."},
+                {"role": "user", "content": req.code}
+            ],
+            temperature=0.3
+        )
+        return {"analysis": response.choices[0].message.content.strip()}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
