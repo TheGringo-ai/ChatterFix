@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from App.routes import workorders, assets, pm, ai, technicians, parts
-from App.routes.assist import router as assist_router
+from app.routes import workorders, assets, pm, ai, technicians, parts
+from app.routes.assist import router as assist_router
 
 app = FastAPI(title="ChatterFix CMMS")
 
@@ -20,11 +20,11 @@ app.include_router(workorders.router, prefix="/workorders")
 app.include_router(assets.router, prefix="/assets")
 app.include_router(pm.router, prefix="/pm")
 app.include_router(ai.router, prefix="/ai")
-app.include_router(technicians.router)
-app.include_router(parts.router)
+app.include_router(technicians.router, prefix="/technicians")
+app.include_router(parts.router, prefix="/parts")
 
 # ✅ AI Assistant helper routes
-app.include_router(assist_router)
+app.include_router(assist_router, prefix="/assist")
 
 # ✅ Health & Root
 @app.get("/")

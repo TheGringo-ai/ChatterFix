@@ -1,13 +1,43 @@
-# Node modules
-frontend/node_modules/
-frontend/.next/
+## See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
-# Python virtual env
-backend/venv/
+# === FRONTEND: Node / Next.js / Vercel ===
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+/.next/
+/out/
+/build
+.vercel
 
-# Env files
+# === TESTING ===
+/coverage
+
+# === DEBUG / LOGS ===
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# === MISC ===
+.DS_Store
+*.pem
+*.zip
+
+# === TYPESCRIPT ===
+*.tsbuildinfo
+next-env.d.ts
+
+# === ENV FILES ===
+.env*
 frontend/.env.local
 backend/.env
 
-# Mac junk
-.DS_Store
+# === BACKEND: Python ===
+backend/.venv/
+__pycache__/
+*.py[cod]

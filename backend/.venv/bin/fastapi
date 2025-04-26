@@ -1,4 +1,4 @@
-#!/Users/fredtaylor/Projects/chatterfix_backend/.venv/bin/python3.13
+#!/Users/fredtaylor/Projects/ChatterFix/backend/.venv/bin/python3.13
 # -*- coding: utf-8 -*-
 import re
 import sys
