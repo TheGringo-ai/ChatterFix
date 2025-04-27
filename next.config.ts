@@ -5,3 +5,9 @@ const nextConfig: NextConfig = {
 };
 
 export default nextConfig;
+export interface Technician {
+  id: string;
+  name: string;
+  skills: string[];
+  status: string;
+}

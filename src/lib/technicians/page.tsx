@@ -2,13 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { fetchTechnicians } from '@/lib/apiClient';
-
-interface Technician {
-  id: string;
-  name: string;
-  skills: string[];
-  status: string;
-}
+import { Technician } from '@/lib/types/models';
 
 export default function TechniciansPage() {
   const [technicians, setTechnicians] = useState<Technician[]>([]);
