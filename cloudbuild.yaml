@@ -1,0 +1,32 @@
+steps:
+  - name: 'python:3.11'
+    id: 'Upgrade Pip'
+    dir: 'backend'
+    entrypoint: 'pip'
+    args: ["install", "--upgrade", "pip"]
+
+  - name: 'python:3.11'
+    id: 'Install Python Dependencies'
+    dir: 'backend'
+    entrypoint: 'pip'
+    args: ["install", "-r", "requirements.txt"]
+
+  - name: 'python:3.11'
+    id: 'Run Backend Server'
+    dir: 'backend'
+    entrypoint: 'uvicorn'
+    args: ["main:app", "--host", "0.0.0.0", "--port", "8080"]
+
+  - name: 'node:20'
+    id: 'Install Frontend Dependencies'
+    dir: 'frontend'
+    entrypoint: 'npm'
+    args: ["install"]
+
+  - name: 'node:20'
+    id: 'Build Frontend'
+    dir: 'frontend'
+    entrypoint: 'npm'
+    args: ["run", "build"]
+
+timeout: 1200s
