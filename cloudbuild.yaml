@@ -1,32 +1,36 @@
 steps:
-  - name: 'python:3.11'
-    id: 'Upgrade Pip'
-    dir: 'backend'
-    entrypoint: 'pip'
-    args: ["install", "--upgrade", "pip"]
+  # Backend: Build Docker Image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Build Backend Docker Image'
+    args: [
+      'build', '-t', 'gcr.io/gen-lang-client-0851999694/chatterfix-backend', './chatterfix'
+    ]
 
-  - name: 'python:3.11'
-    id: 'Install Python Dependencies'
-    dir: 'backend'
-    entrypoint: 'pip'
-    args: ["install", "-r", "requirements.txt"]
+  # Backend: Push Docker Image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'Push Backend Docker Image'
+    args: [
+      'push', 'gcr.io/gen-lang-client-0851999694/chatterfix-backend'
+    ]
 
-  - name: 'python:3.11'
-    id: 'Run Backend Server'
-    dir: 'backend'
-    entrypoint: 'uvicorn'
-    args: ["main:app", "--host", "0.0.0.0", "--port", "8080"]
-
+  # Frontend: Install Dependencies
   - name: 'node:20'
     id: 'Install Frontend Dependencies'
     dir: 'frontend'
     entrypoint: 'npm'
-    args: ["install"]
+    args: ['install']
 
+  # Frontend: Build Frontend
   - name: 'node:20'
     id: 'Build Frontend'
     dir: 'frontend'
     entrypoint: 'npm'
-    args: ["run", "build"]
+    args: ['run', 'build']
+
+images:
+  - 'gcr.io/gen-lang-client-0851999694/chatterfix-backend'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
 
 timeout: 1200s
