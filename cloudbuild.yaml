@@ -29,7 +29,6 @@ steps:
     args: ["run", "build"]
 
 timeout: 1200s
-logsBucket: 'gs://chatterfix-logs'  # optional if you want to store logs
 serviceAccount: 'chatterfix-builder@gen-lang-client-0851999694.iam.gserviceaccount.com'
 options:
   logging: CLOUD_LOGGING_ONLY
