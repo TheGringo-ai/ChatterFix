@@ -1,36 +1,35 @@
 steps:
-  # Backend: Build Docker Image
+  - name: 'python:3.11'
+    id: 'Upgrade Pip'
+    dir: 'chatterfix'
+    entrypoint: 'pip'
+    args: ["install", "--upgrade", "pip"]
+
+  - name: 'python:3.11'
+    id: 'Install Python Dependencies'
+    dir: 'chatterfix'
+    entrypoint: 'pip'
+    args: ["install", "-r", "requirements.txt"]
+
   - name: 'gcr.io/cloud-builders/docker'
     id: 'Build Backend Docker Image'
-    args: [
-      'build', '-t', 'gcr.io/gen-lang-client-0851999694/chatterfix-backend', './chatterfix'
-    ]
+    dir: 'chatterfix'
+    args: ['build', '-t', 'gcr.io/gen-lang-client-0851999694/chatterfix-backend', '.']
 
-  # Backend: Push Docker Image
-  - name: 'gcr.io/cloud-builders/docker'
-    id: 'Push Backend Docker Image'
-    args: [
-      'push', 'gcr.io/gen-lang-client-0851999694/chatterfix-backend'
-    ]
-
-  # Frontend: Install Dependencies
   - name: 'node:20'
     id: 'Install Frontend Dependencies'
     dir: 'frontend'
     entrypoint: 'npm'
-    args: ['install']
+    args: ["install"]
 
-  # Frontend: Build Frontend
   - name: 'node:20'
     id: 'Build Frontend'
     dir: 'frontend'
     entrypoint: 'npm'
-    args: ['run', 'build']
-
-images:
-  - 'gcr.io/gen-lang-client-0851999694/chatterfix-backend'
-
-options:
-  logging: CLOUD_LOGGING_ONLY
+    args: ["run", "build"]
 
 timeout: 1200s
+logsBucket: 'gs://chatterfix-logs'  # optional if you want to store logs
+serviceAccount: 'chatterfix-builder@gen-lang-client-0851999694.iam.gserviceaccount.com'
+options:
+  logging: CLOUD_LOGGING_ONLY
