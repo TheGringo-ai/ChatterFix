@@ -1,77 +1,53 @@
+'use client';
 
-import { useEffect, useState } from 'react'
-import axios from 'axios'
+import { useEffect, useState } from 'react';
+
+// Define the shape of each work order
+type WorkOrder = {
+  id: string;
+  title: string;
+  description: string;
+};
 
 export default function WorkOrdersPage() {
-  const [workOrders, setWorkOrders] = useState([])
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [loading, setLoading] = useState(false)
+  const [workOrders, setWorkOrders] = useState<WorkOrder[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchWorkOrders()
-  }, [])
-
-  const fetchWorkOrders = async () => {
-    try {
-      const res = await axios.get('http://localhost:8000/workorders')
-      setWorkOrders(res.data)
-    } catch (err) {
-      console.error('Failed to fetch work orders:', err)
+    async function fetchWorkOrders() {
+      try {
+        const res = await fetch('/api/workorders');
+        if (!res.ok) throw new Error('Failed to fetch work orders');
+        const data: WorkOrder[] = await res.json();
+        setWorkOrders(data);
+      } catch (err) {
+        setError((err as Error).message);
+      } finally {
+        setLoading(false);
+      }
     }
-  }
 
-  const createWorkOrder = async () => {
-    setLoading(true)
-    try {
-      await axios.post('http://localhost:8000/workorders', {
-        title,
-        description,
-      })
-      setTitle('')
-      setDescription('')
-      fetchWorkOrders()
-    } catch (err) {
-      console.error('Failed to create work order:', err)
-    }
-    setLoading(false)
-  }
+    fetchWorkOrders();
+  }, []);
 
   return (
-    <div className="p-8">
+    <div className="p-6">
       <h1 className="text-2xl font-bold mb-4">Work Orders</h1>
 
-      <div className="mb-6">
-        <input
-          className="block w-full border p-2 mb-2"
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-        />
-        <textarea
-          className="block w-full border p-2 mb-2"
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-        <button
-          className="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50"
-          onClick={createWorkOrder}
-          disabled={loading || !title || !description}
-        >
-          {loading ? 'Creating...' : 'Create Work Order'}
-        </button>
-      </div>
+      {loading && <p>Loading...</p>}
+      {error && <p className="text-red-500">Error: {error}</p>}
 
-      <ul className="space-y-4">
-        {workOrders.map((order) => (
-          <li key={order.id} className="p-4 bg-white rounded shadow">
-            <h2 className="font-bold text-lg">{order.title}</h2>
-            <p className="text-sm text-gray-600">{order.description}</p>
-          </li>
-        ))}
-      </ul>
+      {!loading && !error && (
+        <ul className="space-y-4">
+          {workOrders.map((order) => (
+            <li key={order.id} className="p-4 bg-white rounded shadow">
+              <h2 className="font-bold text-lg">{order.title}</h2>
+              <p className="text-sm text-gray-600">{order.description}</p>
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
-  )
+  );
 }
-
