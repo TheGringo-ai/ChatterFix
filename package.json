@@ -3,11 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --turbopack",
+    "dev": "next dev --turbo",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
-    "export": "next export",
+    "lint": "next lint",
+    "export": "next export"
   },
   "dependencies": {
     "autoprefixer": "^10.4.21",
