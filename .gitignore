@@ -1,2 +1,4 @@
 .env
 service-accounts/
+*.json
+service-accounts/
