@@ -12,14 +12,10 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Decode GCP service account key
-        run: |
-          echo "${{ secrets.GCP_SA_KEY_B64 }}" | base64 -d > "$HOME/sa-key.json"
-
       - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          credentials_json_path: ${{ github.workspace }}/sa-key.json
+          credentials_json: ${{ secrets.GCP_SA_KEY_B64 }}
 
       - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
