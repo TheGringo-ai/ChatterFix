@@ -1,4 +1,4 @@
-name: 🚀 Deploy to Cloud Run
+name: Deploy to Cloud Run
 
 on:
   push:
@@ -9,28 +9,26 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: 📥 Checkout code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: 🔐 Decode GCP service account key
+      - name: Decode GCP service account key
         run: |
-          echo "${{ secrets.GCP_SA_KEY_B64 }}" | base64 -d > ${{ github.workspace }}/gcp-key.json
+          echo "${{ secrets.GCP_SA_KEY_B64 }}" | base64 -d > "$HOME/sa-key.json"
 
-      - name: ☁️ Authenticate with Google Cloud
+      - name: Authenticate with Google Cloud
         uses: google-github-actions/auth@v1
         with:
-          credentials_json_path: ${{ github.workspace }}/gcp-key.json
+          credentials_json_path: ${{ github.workspace }}/sa-key.json
 
-      - name: 🔧 Set up gcloud CLI
+      - name: Set up Cloud SDK
         uses: google-github-actions/setup-gcloud@v1
-        with:
-          project_id: google-mpf-572271460068
-          service_account_key: ${{ secrets.GCP_SA_KEY_B64 }}
 
-      - name: 🚀 Deploy to Cloud Run
+      - name: Deploy to Cloud Run
         run: |
+          gcloud config set project google-mpf-572271460068
           gcloud run deploy chatterfix-api \
-            --source . \
+            --source ./backend \
             --region us-central1 \
             --platform managed \
             --allow-unauthenticated \
