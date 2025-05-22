@@ -1,0 +1,16 @@
+from fastapi import Request
+from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
+
+templates = Jinja2Templates(directory="templates")
+
+@router.get("/ai/dashboard", response_class=HTMLResponse)
+def show_ai_dashboard(request: Request):
+    suggestions = [
+        "Optimize part delivery by clustering PM schedules.",
+        "Use AI to predict failure types based on asset history.",
+        "Enable voice input to create work orders in the field.",
+        "Display upcoming critical tasks by priority daily.",
+        "Create one-click PM templates for common assets."
+    ]
+    return templates.TemplateResponse("ai_dashboard.html", {"request": request, "suggestions": suggestions})
