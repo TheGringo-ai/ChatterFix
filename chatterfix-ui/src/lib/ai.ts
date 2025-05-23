@@ -1,5 +1,6 @@
 export async function getAIResponse(prompt: string) {
-  const res = await fetch('/api/ai/assist', {
+  const backend = process.env.NEXT_PUBLIC_BACKEND_URL || '';
+  const res = await fetch(`${backend}/api/ai/assist`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({ prompt }),

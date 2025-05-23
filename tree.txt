@@ -1,0 +1,80 @@
+.
+├── __pycache__
+│   └── main.cpython-312.pyc
+├── backend
+│   ├── __pycache__
+│   │   └── main.cpython-312.pyc
+│   ├── backend
+│   ├── Dockerfile
+│   ├── Icon\015
+│   ├── main.py
+│   ├── models
+│   │   ├── __init__.py
+│   │   ├── Icon\015
+│   │   └── workorder.py
+│   ├── requirements.txt
+│   ├── routes
+│   │   ├── __init__.py
+│   │   ├── __pycache__
+│   │   ├── ai_assist.py
+│   │   ├── ai_console.py
+│   │   ├── assets.py
+│   │   ├── Icon\015
+│   │   ├── parts.py
+│   │   ├── schedule.py
+│   │   ├── technician_logs.py
+│   │   └── workorders.py
+│   ├── services
+│   │   ├── __init__.py
+│   │   ├── builder_ai.py
+│   │   ├── gemini.py
+│   │   ├── Icon\015
+│   │   └── openai.py
+│   └── templates
+│       ├── ai_dashboard.html
+│       └── Icon\015
+├── chatterfix-ui
+│   └── src
+│       ├── app
+│       └── lib
+├── Dockerfile
+├── Docs
+├── Icon\015
+├── main.py
+├── models
+│   ├── __init__.py
+│   ├── Icon\015
+│   └── workorder.py
+├── requirements.txt
+├── routes
+│   ├── __init__.py
+│   ├── __pycache__
+│   │   ├── __init__.cpython-312.pyc
+│   │   ├── ai_console.cpython-312.pyc
+│   │   ├── assets.cpython-312.pyc
+│   │   ├── parts.cpython-312.pyc
+│   │   ├── schedule.cpython-312.pyc
+│   │   ├── technician_logs.cpython-312.pyc
+│   │   └── workorders.cpython-312.pyc
+│   ├── ai_assist.py
+│   ├── ai_console.py
+│   ├── assets.py
+│   ├── Icon\015
+│   ├── parts.py
+│   ├── schedule.py
+│   ├── technician_logs.py
+│   └── workorders.py
+├── service-accounts
+│   └── keys
+│       └── google-mpf-572271460068-6462edb63fa8.json
+├── services
+│   ├── __init__.py
+│   ├── builder_ai.py
+│   ├── gemini.py
+│   └── Icon\015
+├── templates
+│   ├── ai_dashboard.html
+│   └── Icon\015
+└── tree.txt
+
+22 directories, 56 files
