@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === ChatterFix Global Styles === */
+
+/* Layout */
+body {
+  @apply font-sans text-gray-900 bg-gray-100 antialiased min-h-screen;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 {
+  @apply font-bold text-gray-800;
+}
+
+/* Paragraphs */
+p {
+  @apply text-gray-700 leading-relaxed;
+}
+
+/* Links */
+a {
+  @apply text-blue-600 hover:underline transition-colors;
+}
+
+/* Forms */
+input, textarea, select, button {
+  @apply focus:outline-none focus:ring-2 focus:ring-blue-500 rounded;
+}
+
+/* Buttons */
+button {
+  @apply bg-blue-600 text-white font-medium py-2 px-4 rounded hover:bg-blue-700 transition;
+}
