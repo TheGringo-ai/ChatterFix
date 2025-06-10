@@ -2,3 +2,4 @@
 service-accounts/
 *.json
 service-accounts/
+node_modules/
